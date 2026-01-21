@@ -12,7 +12,7 @@ export default function TransactionPage() {
                     <h1 className="font-bold text-3xl mb-2">Transaction</h1>
                     <p className="text-gray-500 ">Manage your income and expenses</p>
                 </div>
-                <Link href="/transaction/add" className="rounded-md bg-blue-600 text-white text-sm px-4 py-2 h-11 justify-center gap-2 whitespace-nowrap cursor-pointer">+ Add Transaction</Link>
+                <Link href="/transaction/add" className="rounded-md bg-blue-600 text-white text-sm px-4 py-2 w-36 justify-center gap-2 whitespace-nowrap cursor-pointer">+ Add Transaction</Link>
             </section>
             {/* main section */}
             <section>

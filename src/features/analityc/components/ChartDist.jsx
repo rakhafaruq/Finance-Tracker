@@ -16,9 +16,9 @@ export default function ChartDist() {
             const type = tx.type ? tx.type.toLowerCase() : "outcome";
 
             if (type === "income") {
-                incomes[category] = (incomes[category] | 0) + amount;
+                incomes[category] = (incomes[category] || 0) + amount;
             } else if (type === "outcome") {
-                outcomes[category] = (outcomes[category] | 0) + amount;
+                outcomes[category] = (outcomes[category] || 0) + amount;
             }
         });
 
@@ -43,9 +43,7 @@ export default function ChartDist() {
         }).format(num);
     };
     
-    function CustomPieChart(data, title, emptyMessage) {
-        const chartData = Array.isArray(data) && data.length > 0 && Array.isArray(data[0]) ? data[0] : data;
-        console.log(chartData);
+function CustomPieChart({data, title, emptyMessage}) {
         const COLORS = [
             "#4f46e5", // Indigo
             "#10b981", // Emerald
@@ -59,13 +57,13 @@ export default function ChartDist() {
 
         return (
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center min-w-0 h-full">
-                <h3 className="text-xl font-bold text-gray-800 mb-4">{chartData.title}</h3>
+                <h3 className="text-xl font-bold text-gray-800 mb-4">{title}</h3>
                 <div className="h-[300px] w-full">
-                    {chartData.length > 0 ? (
+                    {data.length > 0 ? (
                         <ResponsiveContainer width="99%" height="100%">
                             <PieChart>
-                                <Pie data={chartData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" stroke="none">
-                                    {chartData.map((entry, index) => (
+                                <Pie data={data} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" stroke="none">
+                                    {data.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>

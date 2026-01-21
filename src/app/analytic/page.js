@@ -13,7 +13,7 @@ export default function AnalyticPage() {
             <section className="mb-6">
                 <SpendingBar />
             </section>
-            <section>
+            <section className="mb-6">
                 <ChartMonth />
             </section>
             <section>
