@@ -45,7 +45,7 @@ export default function ChartMonth() {
             <h2 className="text-xl font-bold text-gray-800 mb-6">Monthly Trend</h2>
 
             <div className="h-[300px] w-full">
-                <ResponsiveContainer width="99%" height="100%">
+                <ResponsiveContainer width="99%" height="100%" debounce={300}>
                     <LineChart data={chartData}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                         <XAxis dataKey="date" tick={{ fontSize: 12, fill: "#9ca3af" }} tickLine={false} axisLine={false} dy={10} />

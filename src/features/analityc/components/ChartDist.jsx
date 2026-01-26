@@ -60,7 +60,7 @@ function CustomPieChart({data, title, emptyMessage}) {
                 <h3 className="text-xl font-bold text-gray-800 mb-4">{title}</h3>
                 <div className="h-[300px] w-full">
                     {data.length > 0 ? (
-                        <ResponsiveContainer width="99%" height="100%">
+                        <ResponsiveContainer width="99%" height="100%" debounce={300}>
                             <PieChart>
                                 <Pie data={data} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" stroke="none">
                                     {data.map((entry, index) => (
