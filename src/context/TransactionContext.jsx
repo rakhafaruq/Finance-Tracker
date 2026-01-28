@@ -1,52 +1,67 @@
 "use client";
 
-import { useState, createContext, useContext, useEffect, useRef } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
+import { supabase } from "@/lib/SupabaseClient";
 
 const FinanceContext = createContext();
-const dataTransaction = [
-    { id: 1, title: "Salary", category: "income", type: "income", amount: 500000, date: "2025-01-15" },
-    { id: 2, title: "Shopping", category: "Housing", type: "outcome", amount: 20000, date: "2025-01-15" },
-];
 
 export const FinanceProvider = ({ children }) => {
-    const [transaction, setTransaction] = useState(dataTransaction);
-    const isMounted = useRef(false)
+    const [transaction, setTransaction] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
+    // READ DATA
     useEffect(() => {
-        if (typeof window !== "undefined") {
-            const savedTrans = localStorage.getItem("finance-tracker-data");
-            if (savedTrans) {
-                try {
-                    setTransaction(JSON.parse(savedTrans));
-                } catch (err) {
-                    console.log(err);
-                    
-                }
+        const fetchTrans = async () => {
+            setIsLoading(true);
+            if (!supabase) {
+                console.error("Supabase client belum terinisialisasi! Cek .env.local");
+                setIsLoading(false);
+                return;
             }
-            isMounted.current = true
-        }
+            const { data, error } = await supabase.from("transactions").select("*").order("date", { ascending: false });
+            if (error) {
+                console.error(error);
+            } else {
+                setTransaction(data || []);
+            }
+            setIsLoading(false);
+            console.log(data);
+        };
+        fetchTrans();
     }, []);
 
-    useEffect(() => {
-        if (isMounted.current) {
-            
-            localStorage.setItem("finance-tracker-data", JSON.stringify(transaction));
+    // CREATE DATA
+    const addTransaction = async (newTx) => {
+        const { ...transactionData } = newTx;
+
+        const { data, error } = await supabase.from("transactions").insert([transactionData]).select();
+        if (error) {
+            console.error("Error adding transaction:" + error);
+            alert("Gagal Menyimpan Data");
+        } else {
+            if (data) setTransaction((prev) => [data[0], ...prev]);
         }
-    }, [transaction]);
-
-    const addTransaction = (newTx) => {
-        setTransaction((prev) => [...prev, { ...newTx, id: Date.now() }]);
     };
 
-    const editTransaction = (id, updateTx) => {
-        setTransaction((prev) => prev.map((tx) => (tx.id === id ? { ...tx, ...updateTx } : tx)));
+    const editTransaction = async (id, updateTx) => {
+        const { error } = await supabase.from("transactions").update(updateTx).eq("id", id);
+        if (error) {
+            console.error("Error update transaction: " + error);
+        } else {
+            setTransaction((prev) => prev.map((tx) => (tx.id === id ? { ...tx, ...updateTx } : tx)));
+        }
     };
 
-    const deleteTransaction = (id) => {
-        setTransaction((prev) => prev.filter((tx) => tx.id !== id));
+    const deleteTransaction = async (id) => {
+        const { error } = await supabase.from("transactions").delete().eq("id", id);
+        if (error) {
+            console.error("Error Delete Transaction: " + error);
+        } else {
+            setTransaction((prev) => prev.filter((tx) => tx.id !== id));
+        }
     };
 
-    return <FinanceContext.Provider value={{ transaction, addTransaction, editTransaction, deleteTransaction }}>{children}</FinanceContext.Provider>;
+    return <FinanceContext.Provider value={{ transaction, isLoading, addTransaction, editTransaction, deleteTransaction }}>{children}</FinanceContext.Provider>;
 };
 
 export const useFinance = () => useContext(FinanceContext);
