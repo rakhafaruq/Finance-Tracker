@@ -11,12 +11,14 @@ export default function TransactionCard() {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filterType, setFilterType] = useState("all");
+    const [cateType, setCateType] = useState("all");
 
     const filteredData = transaction
         .filter((tx) => {
             const matchSearch = tx.type.toLowerCase().includes(searchTerm.toLowerCase()) || tx.title.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesType = filterType === "all" ? true : tx.type === filterType;
-            return matchesType && matchSearch;
+            const matchesCate = cateType === "all" ? true : tx.category === cateType;
+            return matchesType && matchSearch && matchesCate;
         })
         .sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -38,10 +40,9 @@ export default function TransactionCard() {
         }).format(num);
     };
 
-
     return (
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
-            <SearchBar transaction={transaction} setSearchTerm={setSearchTerm} setFilterType={setFilterType} searchTerm={searchTerm} filterType={filterType} />
+            <SearchBar transaction={transaction} setSearchTerm={setSearchTerm} setFilterType={setFilterType} searchTerm={searchTerm} filterType={filterType} setCateType={setCateType} cateType={cateType} />
             <div>
                 {transaction.length > 0 ? (
                     <div className="overflow-x-auto">
